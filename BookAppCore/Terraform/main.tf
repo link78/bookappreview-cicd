@@ -13,7 +13,7 @@
 features {}
 }
 resource "azurerm_resource_group" "dev" {
-  name     = "faso-web-rg"
+  name     = "faso-webapp-rg"
   location = "eastus"
 }
 
