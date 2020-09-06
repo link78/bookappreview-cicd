@@ -43,8 +43,11 @@ namespace BookAppCore.Controllers
         
         public IActionResult About()
         {
-            return View()
+            return View();
         }
+
+
+        
         public IActionResult Details(int id)
         {
             var m = repo.getBook(id);
