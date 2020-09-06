@@ -24,7 +24,7 @@ resource "azurerm_app_service_plan" "dev" {
 
   sku {
     tier = "Free"
-    size = "Basic"
+    size = "F1"
   }
 }
 
