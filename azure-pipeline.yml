@@ -87,7 +87,7 @@ stages:
         SqlPassword: 'Marine1775$$'
         deployType: 'DacpacTask'
         DeploymentAction: 'Publish'
-        DacpacFile: '$(build.artifactstagingdirectory)\drop\bin\Debug\*.dacpac'
+        DacpacFile: '$(System.DefaultWorkingDirectory)\drop\bin\Debug\*.dacpac'
         IpDetectionMethod: 'AutoDetect'
 
  
