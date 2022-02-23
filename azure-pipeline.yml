@@ -6,7 +6,10 @@ trigger:
 variables:
   buildConfiguration: 'Release'
   projectsToBuild: '**/*.sqlproj'
-
+  server-dns: 'fcs01-02sqlsvr.database.windows.net'
+  db: 'WebBookData'
+  login: 'abdouladmin'
+  password: 'Marine7815@@%%'
 
 
 
@@ -69,9 +72,19 @@ stages:
     #   displayName: 'Publish Artifact'
     #   inputs:
     #     PathtoPublish: '$(build.artifactstagingdirectory)'
+  
+  - job: "DeploySQLServer"
+    displayName: 'deploying sql'
+    dependsOn: BuildAndTest
+    pool: 
+      vmImage: 'windows-latest'
+    
+    steps:
+    - task: SqlAzureDacpacDeployment@1
+      displayName: 'Azure SQL DacpacTask'
+      inputs:
 
-
-
+ 
 
 
 
