@@ -112,7 +112,7 @@ stages:
  
   - job: "DeployWebApp"
     displayName: 'deploying web  app'
-    dependsOn: DeploySQLServer
+   # dependsOn: DeploySQLServer
     variables:
       - group: Global
     steps:
