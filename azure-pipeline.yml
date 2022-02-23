@@ -1,0 +1,50 @@
+trigger:
+  batch: true
+  branches:
+    include: 
+    - master
+variables:
+  buildConfiguration: 'Release'
+  
+stages:
+
+# Build Stage
+- stage: BuildAndTest
+  jobs:
+  - job: BuildAndTest
+    pool:
+      vmImage: 'windows-latest'
+    steps:
+    # Build and publish the application library
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet restore'
+      inputs:
+        command: restore
+        projects: '**/BookAppCore*.csproj'
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet build'
+      inputs:
+        command: build
+        projects: '**/BookAppCore*.csproj'
+        arguments: '--configuration $(buildConfiguration)'
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet publish'
+      inputs:
+        command: publish
+        publishWebProjects: True
+        arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)/app'
+        zipAfterPublish: True
+    - task: CopyFiles@2
+      displayName: 'Copy Database File'
+      inputs:
+        Contents: '**\BookApp.Data\*.sqlproj'
+        TargetFolder: '$(build.artifactstagingdirectory)/db'
+    flattenFolders: true
+    # Publish the app as an artifact
+    - publish: $(Build.StagingDirectory)
+      artifact: app
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact'
+      inputs:
+        PathtoPublish: '$(build.artifactstagingdirectory)'
