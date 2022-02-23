@@ -73,7 +73,7 @@ stages:
   jobs:
   - job: "DeploySQLServer"
     displayName: 'deploying sql'
-    dependsOn: BuildAndTest
+  #  dependsOn: BuildAndTest
     variables:
       - group: Global
     
