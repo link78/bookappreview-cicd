@@ -78,16 +78,6 @@ stages:
       - group: Global
     
     steps:
-
-    
-    # - task: DownloadBuildArtifacts@1
-    #   inputs:
-    #     buildType: 'specific'
-    #     project: 'f8775c2e-4405-43fd-bb9c-3fc76776a794'
-    #     pipeline: '25'
-    #     buildVersionToDownload: 'latest'
-    #     downloadType: 'single'
-    #     downloadPath: '$(System.ArtifactsDirectory)'
     - task: DownloadBuildArtifacts@1
       inputs:
         buildType: 'current'
@@ -111,15 +101,36 @@ stages:
  
 
     
-    - task: AzureRmWebAppDeployment@4
-      displayName: 'deploying web app'
-      inputs:
-        ConnectionType: 'AzureRM'
-        azureSubscription: 'Pay-As-You-Go-Valid (7983f3c2-dccb-4697-908f-0c57dfe0ec41)'
-        appType: 'webApp'
-        WebAppName: 'fasotestapp'
-        packageForLinux: '$(System.ArtifactsDirectory)/**/*.zip'
-
+    # - task: AzureRmWebAppDeployment@4
+    #   displayName: 'deploying web app'
+    #   inputs:
+    #     ConnectionType: 'AzureRM'
+    #     azureSubscription: 'Pay-As-You-Go-Valid (7983f3c2-dccb-4697-908f-0c57dfe0ec41)'
+    #     appType: 'webApp'
+    #     WebAppName: 'fasotestapp'
+    #     packageForLinux: '$(System.ArtifactsDirectory)/**/*.zip'
+ 
+  - job: "DeployWebApp"
+    displayName: 'deploying web  app'
+    dependsOn: DeploySQLServer
+    variables:
+      - group: Global
+    steps:
+      - task: DownloadBuildArtifacts@1
+        displayName: 'download artifacts web app'
+        inputs:
+          buildType: 'current'
+          downloadType: 'single'
+          artifactName: 'drop'
+          downloadPath: '$(System.ArtifactsDirectory)'
+      - task: AzureRmWebAppDeployment@4
+        displayName: 'deploying web app'
+        inputs:
+          ConnectionType: 'AzureRM'
+          azureSubscription: 'Pay-As-You-Go-Valid (7983f3c2-dccb-4697-908f-0c57dfe0ec41)'
+          appType: 'webApp'
+          WebAppName: 'fasotestapp'
+          packageForLinux: '$(System.ArtifactsDirectory)/**/*.zip'
 
 
 
