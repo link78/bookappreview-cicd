@@ -78,15 +78,15 @@ stages:
     
     steps:
 
-    -
-  - task: DownloadBuildArtifacts@1
-    inputs:
-      buildType: 'specific'
-      project: 'f8775c2e-4405-43fd-bb9c-3fc76776a794'
-      pipeline: '25'
-      buildVersionToDownload: 'latest'
-      downloadType: 'single'
-      downloadPath: '$(System.ArtifactsDirectory)'
+    
+    - task: DownloadBuildArtifacts@1
+      inputs:
+        buildType: 'specific'
+        project: 'f8775c2e-4405-43fd-bb9c-3fc76776a794'
+        pipeline: '25'
+        buildVersionToDownload: 'latest'
+        downloadType: 'single'
+        downloadPath: '$(System.ArtifactsDirectory)'
     - task: SqlAzureDacpacDeployment@1
       inputs:
         azureSubscription: 'Pay-As-You-Go-Valid (7983f3c2-dccb-4697-908f-0c57dfe0ec41)'
