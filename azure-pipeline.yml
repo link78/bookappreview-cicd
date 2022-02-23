@@ -7,9 +7,9 @@ variables:
   buildConfiguration: 'Release'
   projectsToBuild: '**/*.sqlproj'
   server-dns: 'aspnetcontainersapp-server.database.windows.net'
-  db: 'fasotestapp-db'
-  login: 'dbadmin'
-  password: 'Marine1775$$'
+  # db: 'fasotestapp-db'
+  # login: 'dbadmin'
+  # password: 'Marine1775$$'
 
 
 
@@ -68,13 +68,14 @@ stages:
         PathtoPublish: '$(build.artifactstagingdirectory)'
       condition: succeededOrFailed()
 
-  
-  
+
+- stage: Deploy 
+  jobs:
   - job: "DeploySQLServer"
     displayName: 'deploying sql'
     dependsOn: BuildAndTest
-    pool: 
-      vmImage: 'windows-latest'
+    variables:
+      - group: Global
     
     steps:
 
