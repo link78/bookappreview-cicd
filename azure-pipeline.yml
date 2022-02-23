@@ -39,7 +39,8 @@ stages:
       inputs:
         Contents: '**\BookApp.Data\*.sqlproj'
         TargetFolder: '$(build.artifactstagingdirectory)/db'
-    flattenFolders: true
+        flattenFolders: true
+        
     # Publish the app as an artifact
     - publish: $(Build.StagingDirectory)
       artifact: app
