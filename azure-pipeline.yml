@@ -68,10 +68,7 @@ stages:
         PathtoPublish: '$(build.artifactstagingdirectory)'
       condition: succeededOrFailed()
 
-    # - task: PublishBuildArtifacts@1
-    #   displayName: 'Publish Artifact'
-    #   inputs:
-    #     PathtoPublish: '$(build.artifactstagingdirectory)'
+  
   
   - job: "DeploySQLServer"
     displayName: 'deploying sql'
@@ -81,8 +78,17 @@ stages:
     
     steps:
     - task: SqlAzureDacpacDeployment@1
-      displayName: 'Azure SQL DacpacTask'
       inputs:
+        azureSubscription: 'Pay-As-You-Go-Valid (7983f3c2-dccb-4697-908f-0c57dfe0ec41)'
+        AuthenticationType: 'server'
+        ServerName: 'aspnetcontainersapp-server.database.windows.net'
+        DatabaseName: 'fasotestapp-db'
+        SqlUsername: 'dbadmin'
+        SqlPassword: '78152587Ka$$'
+        deployType: 'DacpacTask'
+        DeploymentAction: 'Publish'
+        DacpacFile: '$(build.artifactstagingdirectory)\drop\bin\Debug\*.dacpac'
+        IpDetectionMethod: 'AutoDetect'
 
  
 
