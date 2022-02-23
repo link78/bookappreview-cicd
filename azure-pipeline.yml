@@ -41,8 +41,8 @@ stages:
 
         
     # Publish the app as an artifact
-    - publish: $(Build.StagingDirectory)
-      artifact: app
+    # - publish: $(Build.StagingDirectory)
+    #   artifact: app
 
     
     - task: MSBuild@1
