@@ -117,7 +117,7 @@ stages:
         azureSubscription: 'Pay-As-You-Go-Valid (7983f3c2-dccb-4697-908f-0c57dfe0ec41)'
         appType: 'webApp'
         WebAppName: 'fasotestapp'
-        packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+        packageForLinux: '$(System.ArtifactsDirectory)/**/*.zip'
 
 
 
