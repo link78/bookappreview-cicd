@@ -56,7 +56,7 @@ stages:
       displayName: 'Copy Files to: Dacpac file'
       inputs:
         SourceFolder: BookApp.Data 
-        Contents: '**/*'
+        Contents: '**/drop/bin/*'
         TargetFolder: '$(build.artifactstagingdirectory)'
 
     - task: PublishBuildArtifacts@1
