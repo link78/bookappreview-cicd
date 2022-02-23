@@ -45,7 +45,61 @@ stages:
     - publish: $(Build.StagingDirectory)
       artifact: app
 
+    
+    - task: MSBuild@1
+      displayName: 'Build solution BookApp.Data'
+      inputs:
+        solution: BookApp.Data 
+
+    - task: CopyFiles@2
+      displayName: 'Copy Files to: Dacpac file'
+      inputs:
+        SourceFolder: BookApp.Data
+        Contents: '**/*'
+        TargetFolder: '$(build.artifactstagingdirectory)/data'
+
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact'
       inputs:
         PathtoPublish: '$(build.artifactstagingdirectory)'
+      condition: succeededOrFailed()
+
+    # - task: PublishBuildArtifacts@1
+    #   displayName: 'Publish Artifact'
+    #   inputs:
+    #     PathtoPublish: '$(build.artifactstagingdirectory)'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
