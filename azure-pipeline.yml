@@ -52,8 +52,8 @@ stages:
       inputs:
         SourceFolder: BookApp.Data
       #  SourceFolder: '$(agent.builddirectory)'
-        Contents: '**/*'
-        TargetFolder: '$(build.artifactstagingdirectory)/data'
+        Contents: '**/bin/*'
+        TargetFolder: '$(build.artifactstagingdirectory)'
 
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact'
