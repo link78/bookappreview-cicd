@@ -84,7 +84,7 @@ stages:
         ServerName: 'aspnetcontainersapp-server.database.windows.net'
         DatabaseName: 'fasotestapp-db'
         SqlUsername: 'dbadmin'
-        SqlPassword: '78152587Ka$$'
+        SqlPassword: 'Marine1775$$'
         deployType: 'DacpacTask'
         DeploymentAction: 'Publish'
         DacpacFile: '$(build.artifactstagingdirectory)\drop\bin\Debug\*.dacpac'
