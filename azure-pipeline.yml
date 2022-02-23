@@ -1,0 +1,160 @@
+trigger:
+  batch: true
+  branches:
+    include: 
+    - master
+variables:
+  buildConfiguration: 'Release'
+  projectsToBuild: '**/*.sqlproj'
+  server-dns: 'aspnetcontainersapp-server.database.windows.net'
+  # db: 'fasotestapp-db'
+  # login: 'dbadmin'
+  # password: 'Marine1775$$'
+
+
+
+stages:
+
+# Build Stage
+- stage: BuildAndTest
+  jobs:
+  - job: BuildAndTest
+    pool:
+      vmImage: 'windows-latest'
+    steps:
+    # Build and publish the application library
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet restore'
+      inputs:
+        command: restore
+        projects: '**/BookAppCore*.csproj'
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet build'
+      inputs:
+        command: build
+        projects: '**/BookAppCore*.csproj'
+        arguments: '--configuration $(buildConfiguration)'
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet publish'
+      inputs:
+        command: publish
+        publishWebProjects: True
+        arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+        zipAfterPublish: True
+
+        
+    # Publish the app as an artifact
+    # - publish: $(Build.StagingDirectory)
+    #   artifact: app
+
+    
+    - task: MSBuild@1
+      displayName: 'Build solution BookApp.Data'
+      inputs:
+       # solution: BookApp.Data 
+        solution: '$(projectsToBuild)'
+        msbuildArguments: '/p:DSP=Microsoft.Data.Tools.Schema.Sql.SqlAzureV12DatabaseSchemaProvider /p:CmdLineInMemoryStorage=True'
+
+    - task: CopyFiles@2
+      displayName: 'Copy Files to: Dacpac file'
+      inputs:
+        SourceFolder: BookApp.Data 
+        Contents: '**/*'
+        TargetFolder: '$(build.artifactstagingdirectory)'
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact'
+      inputs:
+        PathtoPublish: '$(build.artifactstagingdirectory)'
+      condition: succeededOrFailed()
+
+
+- stage: Deploy 
+  jobs:
+  - job: "DeploySQLServer"
+    pool:
+      vmImage: 'windows-latest' 
+    displayName: 'deploying sql'
+    variables:
+      - group: Global
+    
+    steps:
+    - task: DownloadBuildArtifacts@1
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: 'drop'
+        downloadPath: '$(System.ArtifactsDirectory)'
+    - task: SqlAzureDacpacDeployment@1
+      displayName: 'Deploying SQL Using dacpa'
+      inputs:
+        azureSubscription: 'Pay-As-You-Go-Valid (7983f3c2-dccb-4697-908f-0c57dfe0ec41)'
+        AuthenticationType: 'server'
+        ServerName: '$(serverdns)'
+        DatabaseName: '$(db)'
+        SqlUsername: '$(dbuser)'
+        SqlPassword: '$(password)'
+        deployType: 'DacpacTask'
+        DeploymentAction: 'Publish'
+        DacpacFile: '$(System.ArtifactsDirectory)\drop\bin\Debug\*.dacpac'
+        IpDetectionMethod: 'AutoDetect'
+    
+    # - task: AzureRmWebAppDeployment@4
+    #   displayName: 'deploying web app'
+    #   inputs:
+    #     ConnectionType: 'AzureRM'
+    #     azureSubscription: 'Pay-As-You-Go-Valid (7983f3c2-dccb-4697-908f-0c57dfe0ec41)'
+    #     appType: 'webApp'
+    #     WebAppName: 'fasotestapp'
+    #     packageForLinux: '$(System.ArtifactsDirectory)/**/*.zip'
+ 
+  - job: "DeployWebApp"
+    displayName: 'deploying web  app'
+    dependsOn: DeploySQLServer
+    variables:
+      - group: Global
+    steps:
+      - task: DownloadBuildArtifacts@1
+        displayName: 'download artifacts web app'
+        inputs:
+          buildType: 'current'
+          downloadType: 'single'
+          artifactName: 'drop'
+          downloadPath: '$(System.ArtifactsDirectory)'
+      - task: AzureRmWebAppDeployment@4
+        displayName: 'deploying web app'
+        inputs:
+          ConnectionType: 'AzureRM'
+          azureSubscription: 'Pay-As-You-Go-Valid (7983f3c2-dccb-4697-908f-0c57dfe0ec41)'
+          appType: 'webApp'
+          WebAppName: 'fasotestapp'
+          packageForLinux: '$(System.ArtifactsDirectory)/**/*.zip'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

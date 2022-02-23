@@ -40,7 +40,14 @@ namespace BookAppCore.Controllers
 
             return View(sql);
         }
+        
+        public IActionResult About()
+        {
+            return View();
+        }
 
+
+        
         public IActionResult Details(int id)
         {
             var m = repo.getBook(id);
