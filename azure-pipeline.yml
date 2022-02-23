@@ -72,6 +72,9 @@ stages:
 - stage: Deploy 
   jobs:
   - job: "DeploySQLServer"
+    pool:
+      vmImage: 'windows-latest'
+      
     displayName: 'deploying sql'
   #  dependsOn: BuildAndTest
     variables:
