@@ -51,12 +51,12 @@ stages:
       inputs:
         SourceFolder: BookApp.Data
         Contents: '**/*'
-        TargetFolder: '$(build.artifactstagingdirectory)/bin/debug/*dacpac'
+        TargetFolder: '$(build.artifactstagingdirectory)drop/bin/debug/*dacpac'
 
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact'
       inputs:
-        PathtoPublish: '$(build.artifactstagingdirectory)/bin/debug/*dacpac'
+        PathtoPublish: '$(build.artifactstagingdirectory)drop/bin/debug/*dacpac'
       condition: succeededOrFailed()
 
     # - task: PublishBuildArtifacts@1
