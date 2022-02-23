@@ -94,6 +94,7 @@ stages:
         artifactName: 'drop'
         downloadPath: '$(System.ArtifactsDirectory)'
     - task: SqlAzureDacpacDeployment@1
+      displayName: 'Deploying SQL Using dacpa'
       inputs:
         azureSubscription: 'Pay-As-You-Go-Valid (7983f3c2-dccb-4697-908f-0c57dfe0ec41)'
         AuthenticationType: 'server'
@@ -108,7 +109,15 @@ stages:
 
  
 
-
+    
+    - task: AzureRmWebAppDeployment@4
+      displayName: 'deploying web app'
+      inputs:
+        ConnectionType: 'AzureRM'
+        azureSubscription: 'Pay-As-You-Go-Valid (7983f3c2-dccb-4697-908f-0c57dfe0ec41)'
+        appType: 'webApp'
+        WebAppName: 'fasotestapp'
+        packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
 
 
 
