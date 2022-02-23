@@ -55,9 +55,8 @@ stages:
     - task: CopyFiles@2
       displayName: 'Copy Files to: Dacpac file'
       inputs:
-     #   SourceFolder: BookApp.Data
-        SourceFolder: '$(agent.builddirectory)'
-        Contents: '**\*'
+        SourceFolder: BookApp.Data 
+        Contents: '**/*'
         TargetFolder: '$(build.artifactstagingdirectory)'
 
     - task: PublishBuildArtifacts@1
