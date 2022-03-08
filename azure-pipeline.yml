@@ -111,6 +111,8 @@ stages:
   - deployment: deploy
     environment: Dev
     displayName: 'deploying web  app'
+    pool:
+      vmImage: 'windows-2022'
     variables:
       - group: Global
     strategy:
