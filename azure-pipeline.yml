@@ -11,7 +11,10 @@ variables:
   # login: 'dbadmin'
   # password: 'Marine1775$$'
 
-
+parameters:
+  - name: nightly
+    type: boolean
+    default: false
 
 stages:
 
