@@ -99,38 +99,95 @@ stages:
         DacpacFile: '$(System.ArtifactsDirectory)\drop\bin\Debug\*.dacpac'
         IpDetectionMethod: 'AutoDetect'
     
-    # - task: AzureRmWebAppDeployment@4
-    #   displayName: 'deploying web app'
-    #   inputs:
-    #     ConnectionType: 'AzureRM'
-    #     azureSubscription: 'Pay-As-You-Go-Valid (7983f3c2-dccb-4697-908f-0c57dfe0ec41)'
-    #     appType: 'webApp'
-    #     WebAppName: 'fasotestapp'
-    #     packageForLinux: '$(System.ArtifactsDirectory)/**/*.zip'
- 
+  
+- stage: deploy_to_dev
+  displayName: Deploy to dev
+  dependsOn: build
+  condition: and(succeeded(), eq('${{ parameters.nightly }}', 'false'))
   - job: "DeployWebApp"
+    environment: Dev
     displayName: 'deploying web  app'
     dependsOn: DeploySQLServer
     variables:
       - group: Global
-    steps:
-      - task: DownloadBuildArtifacts@1
-        displayName: 'download artifacts web app'
-        inputs:
-          buildType: 'current'
-          downloadType: 'single'
-          artifactName: 'drop'
-          downloadPath: '$(System.ArtifactsDirectory)'
-      - task: AzureRmWebAppDeployment@4
-        displayName: 'deploying web app'
-        inputs:
-          ConnectionType: 'AzureRM'
-          azureSubscription: 'Pay-As-You-Go-Valid (7983f3c2-dccb-4697-908f-0c57dfe0ec41)'
-          appType: 'webApp'
-          WebAppName: 'fasotestapp'
-          packageForLinux: '$(System.ArtifactsDirectory)/**/*.zip'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - task: DownloadBuildArtifacts@1
+              displayName: 'download artifacts web app'
+              inputs:
+                buildType: 'current'
+                downloadType: 'single'
+                artifactName: 'drop'
+                downloadPath: '$(System.ArtifactsDirectory)'
+            - task: SqlAzureDacpacDeployment@1
+              displayName: 'Deploying SQL Using dacpa'
+              inputs:
+                azureSubscription: 'Pay-As-You-Go-Valid (7983f3c2-dccb-4697-908f-0c57dfe0ec41)'
+                AuthenticationType: 'server'
+                ServerName: '$(serverdns)'
+                DatabaseName: '$(db)'
+                SqlUsername: '$(dbuser)'
+                SqlPassword: '$(password)'
+                deployType: 'DacpacTask'
+                DeploymentAction: 'Publish'
+                DacpacFile: '$(System.ArtifactsDirectory)\drop\bin\Debug\*.dacpac'
+                IpDetectionMethod: 'AutoDetect'  
 
+            - task: AzureRmWebAppDeployment@4
+              displayName: 'deploying web app'
+              inputs:
+                ConnectionType: 'AzureRM'
+                azureSubscription: 'Pay-As-You-Go-Valid (7983f3c2-dccb-4697-908f-0c57dfe0ec41)'
+                appType: 'webApp'
+                WebAppName: 'fasotestapp'
+                packageForLinux: '$(System.ArtifactsDirectory)/**/*.zip'
 
+- stage: DeployToTest 
+  displayName: Deploy to dev
+  dependsOn: deploy_to_dev
+  condition: succeeded()
+  jobs:
+  - deployment: Deploy
+    displayName: 'deploying sql'
+    environment: Test
+    pool:
+      vmImage: 'windows-latest'   
+    variables:
+      - group: Test
+    strategy:
+     runOnce:
+      deploy:   
+        steps:
+        - task: DownloadBuildArtifacts@1
+          inputs:
+            buildType: 'current'
+            downloadType: 'single'
+            artifactName: 'drop'
+            downloadPath: '$(System.ArtifactsDirectory)'
+        - task: SqlAzureDacpacDeployment@1
+          displayName: 'Deploying SQL Using dacpa'
+          inputs:
+            azureSubscription: 'Pay-As-You-Go-Valid (7983f3c2-dccb-4697-908f-0c57dfe0ec41)'
+            AuthenticationType: 'server'
+            ServerName: '$(serverdns)'
+            DatabaseName: '$(db)'
+            SqlUsername: '$(dbuser)'
+            SqlPassword: '$(password)'
+            deployType: 'DacpacTask'
+            DeploymentAction: 'Publish'
+            DacpacFile: '$(System.ArtifactsDirectory)\drop\bin\Debug\*.dacpac'
+            IpDetectionMethod: 'AutoDetect'
+    
+        - task: AzureRmWebAppDeployment@4
+          displayName: 'deploying web app'
+          inputs:
+            ConnectionType: 'AzureRM'
+            azureSubscription: 'Pay-As-You-Go-Valid (7983f3c2-dccb-4697-908f-0c57dfe0ec41)'
+            appType: 'webApp'
+            WebAppName: '$(webapp)'
+            packageForLinux: '$(System.ArtifactsDirectory)/**/*.zip'
 
 
 
