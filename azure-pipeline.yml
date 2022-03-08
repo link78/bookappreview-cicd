@@ -72,42 +72,43 @@ stages:
       condition: succeededOrFailed()
 
 
-- stage: Deploy 
-  jobs:
-  - job: "DeploySQLServer"
-    pool:
-      vmImage: 'windows-latest' 
-    displayName: 'deploying sql'
-    variables:
-      - group: Global
+# - stage: Deploy 
+#   jobs:
+#   - job: "DeploySQLServer"
+#     pool:
+#       vmImage: 'windows-latest' 
+#     displayName: 'deploying sql'
+#     variables:
+#       - group: Global
     
-    steps:
-    - task: DownloadBuildArtifacts@1
-      inputs:
-        buildType: 'current'
-        downloadType: 'single'
-        artifactName: 'drop'
-        downloadPath: '$(System.ArtifactsDirectory)'
-    - task: SqlAzureDacpacDeployment@1
-      displayName: 'Deploying SQL Using dacpa'
-      inputs:
-        azureSubscription: 'Pay-As-You-Go-Valid (7983f3c2-dccb-4697-908f-0c57dfe0ec41)'
-        AuthenticationType: 'server'
-        ServerName: '$(serverdns)'
-        DatabaseName: '$(db)'
-        SqlUsername: '$(dbuser)'
-        SqlPassword: '$(password)'
-        deployType: 'DacpacTask'
-        DeploymentAction: 'Publish'
-        DacpacFile: '$(System.ArtifactsDirectory)\drop\bin\Debug\*.dacpac'
-        IpDetectionMethod: 'AutoDetect'
+#     steps:
+#     - task: DownloadBuildArtifacts@1
+#       inputs:
+#         buildType: 'current'
+#         downloadType: 'single'
+#         artifactName: 'drop'
+#         downloadPath: '$(System.ArtifactsDirectory)'
+#     - task: SqlAzureDacpacDeployment@1
+#       displayName: 'Deploying SQL Using dacpa'
+#       inputs:
+#         azureSubscription: 'Pay-As-You-Go-Valid (7983f3c2-dccb-4697-908f-0c57dfe0ec41)'
+#         AuthenticationType: 'server'
+#         ServerName: '$(serverdns)'
+#         DatabaseName: '$(db)'
+#         SqlUsername: '$(dbuser)'
+#         SqlPassword: '$(password)'
+#         deployType: 'DacpacTask'
+#         DeploymentAction: 'Publish'
+#         DacpacFile: '$(System.ArtifactsDirectory)\drop\bin\Debug\*.dacpac'
+#         IpDetectionMethod: 'AutoDetect'
     
   
 - stage: deploy_to_dev
   displayName: Deploy to dev
-  dependsOn: build
+  dependsOn: BuildAndTest
   condition: and(succeeded(), eq('${{ parameters.nightly }}', 'false'))
-  - job: "DeployWebApp"
+  jobs: 
+  - deployment: deploy
     environment: Dev
     displayName: 'deploying web  app'
     dependsOn: DeploySQLServer
