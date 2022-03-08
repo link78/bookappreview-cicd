@@ -19,9 +19,9 @@ parameters:
 stages:
 
 # Build Stage
-- stage: BuildAndTest
+- stage: build
   jobs:
-  - job: BuildAndTest
+  - job: build
     pool:
       vmImage: 'windows-latest'
     steps:
@@ -105,13 +105,12 @@ stages:
   
 - stage: deploy_to_dev
   displayName: Deploy to dev
-  dependsOn: BuildAndTest
+  dependsOn: build
   condition: and(succeeded(), eq('${{ parameters.nightly }}', 'false'))
   jobs: 
   - deployment: deploy
     environment: Dev
     displayName: 'deploying web  app'
-    dependsOn: DeploySQLServer
     variables:
       - group: Global
     strategy:
