@@ -2,7 +2,9 @@ trigger:
   batch: true
   branches:
     include: 
-    - none
+    - master
+
+
 variables:
   buildConfiguration: 'Release'
   projectsToBuild: '**/*.sqlproj'
@@ -150,11 +152,11 @@ stages:
                 packageForLinux: '$(System.ArtifactsDirectory)/**/*.zip'
 
 - stage: DeployToTest 
-  displayName: Deploy to dev
+  displayName: Deploy_to_test
   dependsOn: deploy_to_dev
   condition: succeeded()
   jobs:
-  - deployment: Deploy
+  - deployment: Deploy_to_test
     displayName: 'deploying sql'
     environment: Test
     pool:
