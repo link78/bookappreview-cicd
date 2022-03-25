@@ -9,9 +9,7 @@ variables:
   buildConfiguration: 'Release'
   projectsToBuild: '**/*.sqlproj'
   server-dns: 'aspnetcontainersapp-server.database.windows.net'
-  # db: 'fasotestapp-db'
-  # login: 'dbadmin'
-  # password: 'Marine1775$$'
+
 
 parameters:
   - name: nightly
@@ -48,10 +46,6 @@ stages:
         zipAfterPublish: True
 
         
-    # Publish the app as an artifact
-    # - publish: $(Build.StagingDirectory)
-    #   artifact: app
-
     
     - task: MSBuild@1
       displayName: 'Build solution BookApp.Data'
@@ -72,37 +66,6 @@ stages:
       inputs:
         PathtoPublish: '$(build.artifactstagingdirectory)'
       condition: succeededOrFailed()
-
-
-# - stage: Deploy 
-#   jobs:
-#   - job: "DeploySQLServer"
-#     pool:
-#       vmImage: 'windows-latest' 
-#     displayName: 'deploying sql'
-#     variables:
-#       - group: Global
-    
-#     steps:
-#     - task: DownloadBuildArtifacts@1
-#       inputs:
-#         buildType: 'current'
-#         downloadType: 'single'
-#         artifactName: 'drop'
-#         downloadPath: '$(System.ArtifactsDirectory)'
-#     - task: SqlAzureDacpacDeployment@1
-#       displayName: 'Deploying SQL Using dacpa'
-#       inputs:
-#         azureSubscription: 'Pay-As-You-Go-Valid (7983f3c2-dccb-4697-908f-0c57dfe0ec41)'
-#         AuthenticationType: 'server'
-#         ServerName: '$(serverdns)'
-#         DatabaseName: '$(db)'
-#         SqlUsername: '$(dbuser)'
-#         SqlPassword: '$(password)'
-#         deployType: 'DacpacTask'
-#         DeploymentAction: 'Publish'
-#         DacpacFile: '$(System.ArtifactsDirectory)\drop\bin\Debug\*.dacpac'
-#         IpDetectionMethod: 'AutoDetect'
     
   
 - stage: deploy_to_dev
